@@ -1,0 +1,19 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/Launcher.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@types/pg": "^8.6.6",
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "pg": "^8.8.0"
+  }
+}
