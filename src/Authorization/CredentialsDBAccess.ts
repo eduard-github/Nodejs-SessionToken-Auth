@@ -16,6 +16,16 @@ export class CredentialDBAccess {
   constructor() {
       this.pool = new Pool(credentials)
       this.pool.connect()
+      this.pool.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      this.pool.query(
+        `CREATE TABLE IF NOT EXISTS credentials ( 
+           pid SERIAL PRIMARY KEY, 
+           id UUID NOT NULL DEFAULT uuid_generate_v4(), 
+           username TEXT NOT NULL, 
+           password TEXT NOT NULL, 
+           rights integer[]
+        )`
+      )
   }
 
   public putCredential(credentials: Credentials): Promise<any> {

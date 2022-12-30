@@ -16,13 +16,25 @@ export class SessionTokenDBAccess {
   constructor() {
       this.pool = new Pool(credentials)
       this.pool.connect()
+      this.pool.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      this.pool.query(
+        `CREATE TABLE IF NOT EXISTS tokens ( 
+          pid SERIAL PRIMARY KEY, 
+          id UUID NOT NULL DEFAULT uuid_generate_v4(), 
+          rights integer[] NOT NULL, 
+          expirationTime DATE NOT NULL, 
+          username TEXT NOT NULL, 
+          valid BOOLEAN NOT NULL , 
+          tokenId TEXT NOT NULL
+        )`
+      )
   }
 
   public storeSessionToken(token: SessionToken): Promise<void> {
     const { tokenId, username, valid, expirationTime, rignts } = token
     return new Promise((resolve, reject) => {
       this.pool.query(
-        'INSERT INTO session (tokenId, username, valid, expirationTime, rights) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
+        'INSERT INTO tokens (tokenId, username, valid, expirationTime, rights) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
         [tokenId, username, valid, expirationTime, rignts], 
         (err: Error, result) => {
           if (err) {

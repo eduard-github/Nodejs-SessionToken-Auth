@@ -1,12 +1,14 @@
 import { Account, SessionToken, TokenGenerator } from "../Server/Model";
 import { CredentialDBAccess } from "./CredentialsDBAccess";
+import { SessionTokenDBAccess } from "./SessionTokenDBAccess";
 
 export class Authorizer implements TokenGenerator {
 
-  private credDBAccess: CredentialDBAccess = new CredentialDBAccess()
+  private credentialDBAccess: CredentialDBAccess = new CredentialDBAccess()
+  private sessionTokenDBAccess: SessionTokenDBAccess = new SessionTokenDBAccess()
 
   public async generateToken(account: Account): Promise<SessionToken | undefined> {
-    const resultAccount = await this.credDBAccess.getCredential(
+    const resultAccount = await this.credentialDBAccess.getCredential(
       account.username, account.password
     )
 
@@ -19,10 +21,8 @@ export class Authorizer implements TokenGenerator {
         tokenId: this.generateRandomTokenId()
       }
 
-
-      return {
-        tokenId: 'someTokenId'
-      } as any
+      await this.sessionTokenDBAccess.storeSessionToken(token)
+      return token
     } else {
       return undefined
     }
