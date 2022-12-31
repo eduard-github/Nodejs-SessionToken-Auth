@@ -1,8 +1,8 @@
-import { Account, SessionToken, TokenGenerator } from "../Server/Model";
+import { Account, SessionToken, TokenGenerator, TokenRights, TokenState, TokenValidator } from "../Server/Model";
 import { CredentialDBAccess } from "./CredentialsDBAccess";
 import { SessionTokenDBAccess } from "./SessionTokenDBAccess";
 
-export class Authorizer implements TokenGenerator {
+export class Authorizer implements TokenGenerator, TokenValidator {
 
   private credentialDBAccess: CredentialDBAccess = new CredentialDBAccess()
   private sessionTokenDBAccess: SessionTokenDBAccess = new SessionTokenDBAccess()
@@ -13,8 +13,9 @@ export class Authorizer implements TokenGenerator {
     )
 
     if(resultAccount) {
+
       const token: SessionToken = {
-        rignts: resultAccount.rights,
+        rights: resultAccount.rights,
         expirationTime: this.generateExpirationTime(),
         username: resultAccount.username,
         valid: true,
@@ -25,6 +26,24 @@ export class Authorizer implements TokenGenerator {
       return token
     } else {
       return undefined
+    }
+  }
+
+  public async validateToken(tokenId: string): Promise<TokenRights> {
+    const token = await this.sessionTokenDBAccess.getSessionToken(tokenId)
+    if(!token || !token.valid) {
+      return {
+        rights: [],
+        state: TokenState.INVALID
+      }
+    } else if(token.expirationTime < new Date()) {
+      return {
+        rights: [],
+        state: TokenState.EXPIRED
+      }
+    } return {
+        rights: token.rights,
+        state: TokenState.VALID
     }
   }
 

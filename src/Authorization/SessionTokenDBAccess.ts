@@ -16,12 +16,10 @@ export class SessionTokenDBAccess {
   constructor() {
       this.pool = new Pool(credentials)
       this.pool.connect()
-      this.pool.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       this.pool.query(
         `CREATE TABLE IF NOT EXISTS tokens ( 
-          pid SERIAL PRIMARY KEY, 
-          id UUID NOT NULL DEFAULT uuid_generate_v4(), 
-          rights integer[] NOT NULL, 
+          id SERIAL PRIMARY KEY, 
+          rights numeric[] NOT NULL, 
           expirationTime DATE NOT NULL, 
           username TEXT NOT NULL, 
           valid BOOLEAN NOT NULL , 
@@ -30,41 +28,40 @@ export class SessionTokenDBAccess {
       )
   }
 
-  public storeSessionToken(token: SessionToken): Promise<void> {
-    const { tokenId, username, valid, expirationTime, rignts } = token
+  public async storeSessionToken(token: SessionToken): Promise<void> {
+    const { tokenId, username, valid, expirationTime, rights } = token
     return new Promise((resolve, reject) => {
       this.pool.query(
-        'INSERT INTO tokens (tokenId, username, valid, expirationTime, rights) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
-        [tokenId, username, valid, expirationTime, rignts], 
-        (err: Error, result) => {
+        'INSERT INTO tokens (tokenId, username, valid, expirationTime, rights) VALUES ($1, $2, $3, $4, $5)', 
+        [tokenId, username, valid, expirationTime, rights], 
+        (err: Error) => {
           if (err) {
             reject(err)
           } else {
-            resolve(result.rows[0])
+            resolve()
           }
         }
       )
     })
   }
 
-  // public async getUserCredential(username: string, password: string): Promise<UserCredentials | undefined> {
-  //   return new Promise((resolve, reject) => {
-  //     this.pool.query(
-  //       'SELECT * FROM users WHERE username = $1 and password = $2', 
-  //       [username, password], 
-  //       (err: Error, result) => {
-  //         if (err) {
-  //           console.log('ERROR ----- ', err)
-  //           reject(err)
-  //         } else {
-  //           if (!result.rows.length) {
-  //             resolve(undefined)
-  //           } else {
-  //             resolve(result.rows[0])
-  //           }
-  //         }
-  //       }
-  //     )
-  //   })
-  // }
+  public async getSessionToken(tokenId: string): Promise<SessionToken | undefined> {
+    return new Promise((resolve, reject) => {
+      this.pool.query(
+        'SElECT * FROM tokens WHERE tokenId = $1', 
+        [tokenId], 
+        (err: Error, result) => {
+          if (err) {
+            reject(err)
+          } else {
+            if (!result.rows.length) {
+              resolve(undefined) 
+            } else {
+              resolve(result.rows[0])
+            }
+          }
+        }
+      )
+    })
+  }
 }

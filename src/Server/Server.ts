@@ -1,6 +1,7 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { Authorizer } from '../Authorization/Autorizer';
 import { LoginHandler } from './LoginHandler';
+import { UsersHandler } from './UsersHandler';
 import { Utils } from './Utils';
 
 const hostname = '127.0.0.1';
@@ -17,7 +18,9 @@ export class Server {
         case 'login':
           await new LoginHandler(req, res, this.authorizer).handleRequest()
           break;
-
+        case 'users':
+          await new UsersHandler(req, res, this.authorizer).handleRequest()
+          break;
         default:
           break;
       }
