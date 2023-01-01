@@ -26,17 +26,17 @@ export class CredentialDBAccess {
       )
   }
 
-  public async putCredential(credentials: Credentials): Promise<any> {
+  public async putCredential(credentials: Credentials): Promise<void> {
     const { username, password, rights } = credentials
     return new Promise((resolve, reject) => {
       this.pool.query(
         'INSERT INTO credentials (username, password, rights) VALUES ($1, $2, $3)', 
         [username, password, rights], 
-        (err: Error, result) => {
+        (err: Error) => {
           if (err) {
             reject(err)
           } else {
-            resolve(result.rows[0])
+            resolve()
           }
         }
       )
