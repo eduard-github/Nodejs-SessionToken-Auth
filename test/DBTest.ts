@@ -5,7 +5,7 @@ class DBTest {
 }
 
 new DBTest().credentilDBAccess.putCredential({
-  username: 'User3',
+  username: 'User1',
   password: '123456',
   rights: [0,1,2,3]
 })

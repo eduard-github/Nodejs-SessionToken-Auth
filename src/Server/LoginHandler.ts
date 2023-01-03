@@ -5,7 +5,7 @@ import { Account, TokenGenerator } from "./Model"
 
 export class LoginHandler extends BaseRequestHandler {
 
-  private tokenGenerator: TokenGenerator 
+  private tokenGenerator: TokenGenerator
 
   constructor(req: IncomingMessage, res: ServerResponse, tokenGenerator: TokenGenerator) {
     super(req, res)
@@ -15,7 +15,7 @@ export class LoginHandler extends BaseRequestHandler {
   public async handleRequest(): Promise<void> {
     switch (this.req.method) {
       case HTTP_METHODS.POST:
-        await this.handlePost()      
+        await this.handlePost()
         break;
       default:
         await this.handleNotFound()
@@ -27,9 +27,9 @@ export class LoginHandler extends BaseRequestHandler {
     try {
       const body: Account = await this.getRequestBody()
       const sessionToken = await this.tokenGenerator.generateToken(body)
-      if(sessionToken) {
+      if (sessionToken) {
         this.res.statusCode = HTTP_CODES.CREATED
-        this.res.writeHead(HTTP_CODES.CREATED, {'Content-Type': 'application/json'})
+        this.res.writeHead(HTTP_CODES.CREATED, { 'Content-Type': 'application/json' })
         this.res.write(JSON.stringify(sessionToken))
       } else {
         this.res.statusCode = HTTP_CODES.NOT_FOUND
@@ -40,5 +40,5 @@ export class LoginHandler extends BaseRequestHandler {
     }
   }
 
- }
+}
 

@@ -11,17 +11,14 @@ export class Authorizer implements TokenGenerator, TokenValidator {
     const resultAccount = await this.credentialDBAccess.getCredential(
       account.username, account.password
     )
-
-    if(resultAccount) {
-
+    if (resultAccount) {
       const token: SessionToken = {
         rights: resultAccount.rights,
-        expirationTime: this.generateExpirationTime(),
+        expiration_time: this.generateExpirationTime(),
         username: resultAccount.username,
         valid: true,
-        tokenId: this.generateRandomTokenId()
+        token_id: this.generateRandomTokenId()
       }
-
       await this.sessionTokenDBAccess.storeSessionToken(token)
       return token
     } else {
@@ -31,19 +28,19 @@ export class Authorizer implements TokenGenerator, TokenValidator {
 
   public async validateToken(tokenId: string): Promise<TokenRights> {
     const token = await this.sessionTokenDBAccess.getSessionToken(tokenId)
-    if(!token || !token.valid) {
+    if (!token || !token.valid) {
       return {
         rights: [],
         state: TokenState.INVALID
       }
-    } else if(token.expirationTime < new Date()) {
+    } else if (token.expiration_time < new Date()) {
       return {
         rights: [],
         state: TokenState.EXPIRED
       }
     } return {
-        rights: token.rights,
-        state: TokenState.VALID
+      rights: token.rights,
+      state: TokenState.VALID
     }
   }
 

@@ -14,26 +14,26 @@ export class SessionTokenDBAccess {
   private pool: Pool
 
   constructor() {
-      this.pool = new Pool(credentials)
-      this.pool.connect()
-      this.pool.query(
-        `CREATE TABLE IF NOT EXISTS tokens ( 
+    this.pool = new Pool(credentials)
+    this.pool.connect()
+    this.pool.query(
+      `CREATE TABLE IF NOT EXISTS tokens ( 
           id SERIAL PRIMARY KEY, 
           rights numeric[] NOT NULL, 
-          expirationTime DATE NOT NULL, 
+          expiration_time TIMESTAMP WITH TIME ZONE NOT NULL, 
           username TEXT NOT NULL, 
-          valid BOOLEAN NOT NULL , 
-          tokenId TEXT NOT NULL
+          valid BOOLEAN NOT NULL, 
+          token_id TEXT NOT NULL
         )`
-      )
+    )
   }
 
   public async storeSessionToken(token: SessionToken): Promise<void> {
-    const { tokenId, username, valid, expirationTime, rights } = token
+    const { token_id, username, valid, expiration_time, rights } = token
     return new Promise((resolve, reject) => {
       this.pool.query(
-        'INSERT INTO tokens (tokenId, username, valid, expirationTime, rights) VALUES ($1, $2, $3, $4, $5)', 
-        [tokenId, username, valid, expirationTime, rights], 
+        'INSERT INTO tokens (token_id, username, valid, expiration_time, rights) VALUES ($1, $2, $3, $4, $5)',
+        [token_id, username, valid, expiration_time, rights],
         (err: Error) => {
           if (err) {
             reject(err)
@@ -48,14 +48,14 @@ export class SessionTokenDBAccess {
   public async getSessionToken(tokenId: string): Promise<SessionToken | undefined> {
     return new Promise((resolve, reject) => {
       this.pool.query(
-        'SElECT * FROM tokens WHERE tokenId = $1', 
-        [tokenId], 
+        'SElECT * FROM tokens WHERE token_id = $1',
+        [tokenId],
         (err: Error, result) => {
           if (err) {
             reject(err)
           } else {
             if (!result.rows.length) {
-              resolve(undefined) 
+              resolve(undefined)
             } else {
               resolve(result.rows[0])
             }

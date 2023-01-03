@@ -19,13 +19,13 @@ export class UsersHandler extends BaseRequestHandler {
   public async handleRequest(): Promise<void> {
     switch (this.req.method) {
       case HTTP_METHODS.GET:
-        await this.handleGet()        
+        await this.handleGet()
         break;
       case HTTP_METHODS.PUT:
-        await this.handlePut()        
+        await this.handlePut()
         break;
       case HTTP_METHODS.DELETE:
-        await this.handleDelete()        
+        await this.handleDelete()
         break;
       default:
         await this.handleNotFound()
@@ -35,14 +35,14 @@ export class UsersHandler extends BaseRequestHandler {
 
   private async handleDelete(): Promise<void> {
     const operationAuthorized = await this.operationAuthorized(AccessRight.DELETE)
-    if(operationAuthorized) {
+    if (operationAuthorized) {
       const parsedUrl = Utils.getUrlParams(this.req.url)
-      if(parsedUrl) {
+      if (parsedUrl) {
         const userId = parsedUrl?.query.id
-        if(userId) {
+        if (userId) {
           try {
-            const deleteResult = await this.userDBAccess.deleteUser(userId as string)  
-            if(deleteResult) {
+            const deleteResult = await this.userDBAccess.deleteUser(userId as string)
+            if (deleteResult) {
               this.respondText(HTTP_CODES.OK, `user ${userId} was deleted`)
             } else {
               this.respondText(HTTP_CODES.OK, `user ${userId} was not deleted`)
@@ -61,13 +61,13 @@ export class UsersHandler extends BaseRequestHandler {
 
   private async handlePut(): Promise<void> {
     const operationAuthorized = await this.operationAuthorized(AccessRight.CREATE)
-    if(operationAuthorized) {
+    if (operationAuthorized) {
       try {
         const user: User = await this.getRequestBody()
-        await this.userDBAccess.putUser(user)  
+        await this.userDBAccess.putUser(user)
         this.respondText(HTTP_CODES.CREATED, `user ${user.name} created`)
       } catch (error) {
-        this.respondBadRequest((error as Error).message)  
+        this.respondBadRequest((error as Error).message)
       }
     } else {
       this.respondUnauthorized('missing or invalid authentication')
@@ -76,14 +76,14 @@ export class UsersHandler extends BaseRequestHandler {
 
   private async handleGet(): Promise<void> {
     const operationAuthorized = await this.operationAuthorized(AccessRight.READ)
-    if(operationAuthorized) {
+    if (operationAuthorized) {
       const parsedUrl = Utils.getUrlParams(this.req.url)
-      if(parsedUrl) {
+      if (parsedUrl) {
         const userId = parsedUrl?.query.id
         const userName = parsedUrl?.query.name
-        if(userId) {
+        if (userId) {
           try {
-            const user = await this.userDBAccess.getUserById(userId as string)  
+            const user = await this.userDBAccess.getUserById(userId as string)
             this.respondJsonObject(HTTP_CODES.OK, user)
           } catch (error) {
             this.handleNotFound()
@@ -93,8 +93,8 @@ export class UsersHandler extends BaseRequestHandler {
           // } else {
           //   this.handleNotFound()
           // }
-        } else if(userName) {
-          const users = await this.userDBAccess.getUserByName(userName as string)  
+        } else if (userName) {
+          const users = await this.userDBAccess.getUserByName(userName as string)
           this.respondJsonObject(HTTP_CODES.OK, users)
         } else {
           this.respondBadRequest('user id or name not present')
@@ -107,16 +107,16 @@ export class UsersHandler extends BaseRequestHandler {
 
   private async operationAuthorized(operation: AccessRight): Promise<boolean> {
     const tokenId = this.req.headers.authorization
-    if(tokenId) {
+    if (tokenId) {
       const tokenRights = await this.tokenValidator.validateToken(tokenId)
-      if(tokenRights.rights.includes(operation)) {
+      if (tokenRights.rights.includes(operation)) {
         return true
       } else {
         console.log('Forbidden')
         return false
       }
     } else {
-      return false 
+      return false
     }
   }
 

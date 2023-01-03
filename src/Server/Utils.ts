@@ -1,8 +1,8 @@
-import { parse, UrlWithParsedQuery, UrlWithStringQuery } from 'url' 
+import { parse, UrlWithParsedQuery, UrlWithStringQuery } from 'url'
 export class Utils {
 
   public static getUrlBasePath(url: string | undefined): string {
-    if(url) {
+    if (url) {
       const parseUrl = parse(url)
       return parseUrl.pathname!.replace('/', '')
     } else {
@@ -14,7 +14,7 @@ export class Utils {
     if (url) {
       return parse(url, true)
     } else {
-      return undefined 
+      return undefined
     }
   }
 

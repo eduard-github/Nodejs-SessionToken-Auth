@@ -2,9 +2,9 @@ import { IncomingMessage, ServerResponse } from "http"
 import { HTTP_CODES } from "../Shared/Model"
 
 export abstract class BaseRequestHandler {
-  
+
   protected req: IncomingMessage
-  protected res: ServerResponse 
+  protected res: ServerResponse
 
   constructor(req: IncomingMessage, res: ServerResponse) {
     this.req = req
@@ -19,8 +19,8 @@ export abstract class BaseRequestHandler {
   }
 
   protected respondJsonObject(code: HTTP_CODES, object: any) {
-    this.res.writeHead(code, {'Content-Type': 'application/json'})
-    this.res.write(JSON.stringify(object)) 
+    this.res.writeHead(code, { 'Content-Type': 'application/json' })
+    this.res.write(JSON.stringify(object))
   }
 
   protected respondBadRequest(message: string) {
@@ -46,9 +46,9 @@ export abstract class BaseRequestHandler {
       })
       this.req.on('end', () => {
         try {
-          resolve(JSON.parse(body)) 
+          resolve(JSON.parse(body))
         } catch (error) {
-          reject(error) 
+          reject(error)
         }
       })
       this.req.on('error', (error: any) => {

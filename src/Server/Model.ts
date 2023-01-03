@@ -6,10 +6,10 @@ export interface Account {
 }
 
 export interface SessionToken {
-  tokenId: string,
+  token_id: string,
   username: string,
   valid: boolean,
-  expirationTime: Date,
+  expiration_time: Date,
   rights: AccessRight[]
 }
 
