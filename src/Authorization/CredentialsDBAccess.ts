@@ -21,7 +21,8 @@ export class CredentialDBAccess {
            id SERIAL PRIMARY KEY, 
            username TEXT NOT NULL, 
            password TEXT NOT NULL, 
-           rights numeric[]
+           rights numeric[],
+           UNIQUE(username)
         )`
     )
   }
