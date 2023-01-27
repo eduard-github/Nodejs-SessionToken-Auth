@@ -4,7 +4,7 @@ import { Credentials } from "../Shared/Model";
 const credentials = {
   user: "postgres",
   host: "localhost",
-  database: "nodedb",
+  database: "nodesessiontokendb",
   password: "123456",
   port: 5432,
 }

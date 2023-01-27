@@ -11,7 +11,8 @@
   "devDependencies": {
     "@types/node": "^18.11.18",
     "@types/pg": "^8.6.6",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "pg": "^8.8.0"

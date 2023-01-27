@@ -5,7 +5,7 @@ import { UsersHandler } from './UsersHandler';
 import { Utils } from './Utils';
 
 const hostname = '127.0.0.1';
-const port = 8080
+const port = 5000
 
 export class Server {
   private authorizer: Authorizer = new Authorizer()
